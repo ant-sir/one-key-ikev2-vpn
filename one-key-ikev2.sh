@@ -71,7 +71,8 @@ function install_ikev2(){
     configure_secrets
     SNAT_set
     iptables_check
-    ipsec restart
+    systemctl enable strongswan-starter
+    systemctl start strongswan-starter
     success_info
 }
 
@@ -94,6 +95,8 @@ fi
 # Ubuntu or CentOS
 function get_system(){
     if grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
+        system_str="0"
+    elif grep -Eq "Amazon Linux" /etc/*-release; then
         system_str="0"
     elif  grep -Eqi "Ubuntu" /etc/issue || grep -Eq "Ubuntu" /etc/*-release; then
         system_str="1"
@@ -487,6 +490,7 @@ EOF
 function firewall_set(){
     if ! systemctl is-active firewalld > /dev/null; then
         systemctl start firewalld
+        systemctl enable firewalld
     fi
     firewall-cmd --permanent --add-service="ipsec"
     firewall-cmd --permanent --add-port=500/udp
