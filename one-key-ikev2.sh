@@ -218,7 +218,7 @@ function pre_install(){
 
 # Download strongswan
 function download_files(){
-    strongswan_version='strongswan-5.9.10'
+    strongswan_version='strongswan-5.9.13'
     strongswan_file="$strongswan_version.tar.gz"
     if [ -f $strongswan_file ];then
         echo -e "$strongswan_file [$(__green "found")]"
@@ -437,6 +437,8 @@ EOF
 
 # firewall set in CentOS7
 function firewall_set(){
+    systemctl stop iptables
+    systemctl disable iptables
     if ! systemctl is-active firewalld > /dev/null; then
         systemctl start firewalld
         systemctl enable firewalld
@@ -450,6 +452,8 @@ function firewall_set(){
 
 # iptables set
 function iptables_set(){
+    systemctl stop firewalld
+    systemctl disable firewalld
     echo -e "$(__yellow "ip address info:")"
     ip address | grep inet
     echo "The above content is the network card information of your VPS."
