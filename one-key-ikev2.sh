@@ -71,6 +71,7 @@ function install_ikev2(){
     configure_secrets
     SNAT_set
     iptables_check
+    systemctl daemon-reload
     systemctl enable strongswan-starter
     systemctl start strongswan-starter
     success_info
@@ -405,14 +406,14 @@ EOF
 
 function SNAT_set(){
     echo "Use SNAT could implove the speed,but your server MUST have static ip address."
-    read -p "yes or no?(default_value:no):" use_SNAT
-    if [ "$use_SNAT" = "yes" ]; then
+    read -p "yes or no?(default_value:yes):" use_SNAT
+    if [ "$use_SNAT" = "" ]; then
         use_SNAT_str="1"
         echo -e "$(__yellow "ip address info:")"
         ip address | grep inet
         echo "Some servers has elastic IP (AWS) or mapping IP.In this case,you should input the IP address which is binding in network interface."
         read -p "static ip or network interface ip (default_value:${IP}):" static_ip
-    if [ "$static_ip" = "" ]; then
+    if [ "$static_ip" = "no" ]; then
         static_ip=$IP
     fi
     else
